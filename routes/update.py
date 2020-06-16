@@ -53,3 +53,26 @@ def update_stats():
                 db.session.flush()
         db.session.commit()
         return {"message": "Stats has been created successfully."}
+
+
+# update fans, likes etc with new data
+def handle_db():
+    if request.method == 'GET':
+
+        users = UserModel.query.all()
+        for user in users:
+            user_id = user.user_id
+            stats = StatsForUser.query.filter(StatsForUser.user_id == user_id).order_by(StatsForUser.updated_date.desc()).first()
+            db.session.query(UserModel).filter(UserModel.user_id == user_id).update({
+                UserModel.signature: stats.signature, 
+                UserModel.cover: stats.cover, 
+                UserModel.cover_medium: stats.cover_medium, 
+                UserModel.following: stats.following, 
+                UserModel.fans: stats.fans, 
+                UserModel.hearts: stats.hearts, 
+                UserModel.video_count: stats.video_count, 
+                UserModel.digg: stats.digg}, synchronize_session=False)
+        db.session.commit()
+
+        return {"message": "DAtabase has been updated successfully."}
+        
