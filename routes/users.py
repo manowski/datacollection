@@ -4,6 +4,40 @@ from flask import jsonify
 from models import *
 
 
+# user details including daily stats
+def handle_user(user_name):
+    user = UserModel.query.filter_by(name=user_name).first_or_404()
+    stats = StatsForUser.query.filter(StatsForUser.user_id == user.user_id).all()
+    data_stats = list([stat.to_dict() for stat in stats])
+    if request.method == 'GET':
+
+        user_info = {
+            'name': user.name,
+            'full_name': user.full_name,
+            'sec_uid': user.sec_uid,
+            'user_id': user.user_id,
+            'signature': user.signature,
+            'cover': user.cover,
+            'cover_medium': user.cover_medium,
+            'country': user.country,
+            'verified': user.verified,
+            'fans': user.fans,
+            'hearts': user.hearts,
+            'video_count': user.video_count,
+            'digg': user.digg,
+            'created': user.created_date,
+        }
+        daily_stats = {
+            'stat_list': data_stats,
+
+        }
+        response = {
+            'user_info': user_info,
+            'stats': daily_stats
+        }
+        return jsonify(response)
+
+
 # show top200 by followers number
 def handle_users():
 
@@ -32,6 +66,7 @@ def handle_users():
         }
 
         return jsonify(result)
+
 
 # show top200 by countries
 def handle_top_country(country_alias):
