@@ -6,15 +6,24 @@ from flask import request
 from models import *
 from asynchronous import fetch_all
 from urllib.parse import parse_qs
+from datetime import datetime, timedelta
+from sqlalchemy import or_
 
 
 # update daily stats
 def update_stats():
     if request.method == 'GET':
-        logging.basicConfig(filename="log_update_stats.log", level=logging.INFO, format='%(asctime)s %(levelname)s:%(message)s')
+        logging.basicConfig(
+            filename="log_update_stats.log", 
+            level=logging.INFO, 
+            format='%(asctime)s %(levelname)s:%(message)s')
+
         loop = asyncio.new_event_loop()
         urls = []
-        users = [r for r in db.session.query(UserModel.id, UserModel.name).limit(20)]
+
+        # exclude recently updated users
+        date = datetime.today() - timedelta(days=1)
+        users = db.session.query(UserModel).filter(or_(UserModel.updated_date <= date, UserModel.updated_date == None))
 
         for u in users:
             user = u.name
@@ -49,20 +58,23 @@ def update_stats():
                     digg=digg, 
                     video_count=video_count)
                 logging.info(' Stats for %s was added', data['uniqueId'])
+                db.session.query(UserModel).filter(UserModel.user_id == user_id).update({
+                    UserModel.updated_date: datetime.today()})
                 db.session.add(stats)
                 db.session.flush()
         db.session.commit()
-        return {"message": "Stats has been created successfully."}
+        return {"message": "Stats has been updated successfully."}
 
 
 # update fans, likes etc with new data
 def handle_db():
     if request.method == 'GET':
-
         users = UserModel.query.all()
         for user in users:
             user_id = user.user_id
-            stats = StatsForUser.query.filter(StatsForUser.user_id == user_id).order_by(StatsForUser.updated_date.desc()).first()
+            stats = StatsForUser.query.filter(StatsForUser.user_id == user_id).order_by(
+                StatsForUser.updated_date.desc()).first()
+
             db.session.query(UserModel).filter(UserModel.user_id == user_id).update({
                 UserModel.signature: stats.signature, 
                 UserModel.cover: stats.cover, 
@@ -74,5 +86,5 @@ def handle_db():
                 UserModel.digg: stats.digg}, synchronize_session=False)
         db.session.commit()
 
-        return {"message": "DAtabase has been updated successfully."}
+        return {"message": "Database has been updated successfully."}
         
