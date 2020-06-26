@@ -47,21 +47,24 @@ def update_stats():
                 hearts = int(data['heart'])
                 digg = data['digg']
                 video_count = data['video']
-                stats = StatsForUser(
-                    user_id=user_id, 
-                    following=following, 
-                    signature=signature, 
-                    cover=cover, 
-                    cover_medium=cover_medium, 
-                    fans=fans, 
-                    hearts=hearts, 
-                    digg=digg, 
-                    video_count=video_count)
-                logging.info(' Stats for %s was added', data['uniqueId'])
-                db.session.query(UserModel).filter(UserModel.user_id == user_id).update({
-                    UserModel.updated_date: datetime.today()})
-                db.session.add(stats)
-                db.session.flush()
+                # check if user_id is in table
+                user_exist = db.session.query(UserModel.user_id).filter_by(user_id=user_id).scalar()
+                if user_exist:
+                    stats = StatsForUser(
+                        user_id=user_id, 
+                        following=following, 
+                        signature=signature, 
+                        cover=cover, 
+                        cover_medium=cover_medium, 
+                        fans=fans, 
+                        hearts=hearts, 
+                        digg=digg, 
+                        video_count=video_count)
+                    logging.info(' Stats for %s was added', data['uniqueId'])
+                    db.session.query(UserModel).filter(UserModel.user_id == user_id).update({
+                        UserModel.updated_date: datetime.today()})
+                    db.session.add(stats)
+                    db.session.flush()
         db.session.commit()
         return {"message": "Stats has been updated successfully."}
 
