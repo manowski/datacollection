@@ -12,7 +12,6 @@ class AccountSerializer(serializers.ModelSerializer):
             'username',
             'first_name',
             'last_name',
-            'profile_picture',
         )
         read_only_fields = ('username', )
 

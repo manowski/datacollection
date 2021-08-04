@@ -15,8 +15,6 @@ class UserAdmin(UserAdmin):
             'last_name',
             'email',
         )
-    }), (_('Profile image'), {
-        'fields': ('profile_picture',)
     }), (_('Permissions'), {
         'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')
     }), (_('Important dates'), {
