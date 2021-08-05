@@ -7,6 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 class Account(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # Throttling per hour
     tier = models.IntegerField(default=0)
 
     def get_tokens(self):

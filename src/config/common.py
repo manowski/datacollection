@@ -266,9 +266,11 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.UserRateThrottle',
+        'src.config.throttling.SubscriptionRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
         'user': '10/day',
+        'subscription': '10/day',
     },
     'TEST_REQUEST_DEFAULT_FORMAT':
     'json'

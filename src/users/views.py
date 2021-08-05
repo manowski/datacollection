@@ -8,10 +8,13 @@ from django.shortcuts import get_object_or_404
 from src.users.serializers import TiktokUserSerializer
 from src.users.models import TiktokUser
 
+from src.config.throttling import SubscriptionRateThrottle
+
 
 class TiktokUserViewSet(viewsets.ModelViewSet):
     queryset = TiktokUser.objects.all()
     permission_classes = [IsAdminUser]
+    throttle_classes = [SubscriptionRateThrottle]
     serializer_class = TiktokUserSerializer
 
     @action(methods=['get'], detail=False, url_path=r'(?P<username>\w+)', permission_classes=[IsAuthenticated])
