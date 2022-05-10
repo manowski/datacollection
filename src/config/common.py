@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     # Your apps
     'src.accounts',
     'src.users',
+    'src.crawlers',
     'src.medias',
     'src.stats',
 
