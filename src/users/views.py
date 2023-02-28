@@ -38,7 +38,7 @@ class TiktokUserViewSet(viewsets.ModelViewSet):
             try:
                 user = TiktokUser.objects.get(username=username)
                 response = TiktokUserSerializer(user, context={'request': request}).data
-                redis_client.set(redis_key, json.dumps(str(response), sort_keys=True, indent=4))
+                redis_client.set(redis_key, json.dumps(response))
                 redis_client.expire(redis_key, timedelta(days=1))
             except TiktokUser.DoesNotExist:
                 with concurrent.futures.ThreadPoolExecutor() as executor:
