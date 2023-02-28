@@ -8,6 +8,7 @@
 - PostgreSQL
 - Full test coverage, continuous integration, and continuous deployment.
 - Celery tasks
+- Images stored via Amazon S3
 
 ### Features built-in
 
